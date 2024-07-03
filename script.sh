@@ -27,9 +27,38 @@ trocar_hosts() {
     fi
 }
 
+# Listar arquivos no diretório ./hosts/
+HOSTS=$(ls ./hosts/)
+
+# Verifica se encontrou arquivos no diretório ./hosts/
+if [ -z "$HOSTS" ]; then
+    dialog --title "Erro" --msgbox "Nenhum arquivo encontrado no diretório ./hosts/" 0 0
+    exit 1
+fi
+
+# Cria a lista de opções para o radiolist
+OPTIONSLIST=()
+for FILE in $HOSTS; do
+    OPTIONSLIST+=("$FILE")
+done
+
+# Cria a lista de opções para o radiolist
+OPTIONS=()
+for FILE in $HOSTS; do
+    OPTIONS+=("$FILE" "$FILE" off)
+done
+
 # Verifica se passou argumentos e se não apresenta um dialog para escolher o host especifico
 if [ "$#" -ge 1 ]; then
     result=$1
+    if [ "$(echo "$result" | tr '[:upper:]' '[:lower:]')" = "help" ]; then
+        echo "Escolha uma das opcoes abaixo:"
+        for i in "${OPTIONSLIST[@]}"; do
+            echo "- $i"
+        done
+        exit 1
+    fi
+
     if [ -e "./hosts/$result" ]; then
         echo "Você selecionou: $result"
     else
@@ -37,21 +66,6 @@ if [ "$#" -ge 1 ]; then
         exit 1
     fi
 else
-    # Listar arquivos no diretório ./hosts/
-    HOSTS=$(ls ./hosts/)
-
-    # Verifica se encontrou arquivos no diretório ./hosts/
-    if [ -z "$HOSTS" ]; then
-        dialog --title "Erro" --msgbox "Nenhum arquivo encontrado no diretório ./hosts/" 0 0
-        exit 1
-    fi
-
-    # Cria a lista de opções para o radiolist
-    OPTIONS=()
-    for FILE in $HOSTS; do
-        OPTIONS+=("$FILE" "$FILE" off)
-    done
-
     # Mostra o radiolist para o usuário selecionar
     result=$(dialog --title "Seleção de arquivo" --radiolist "Selecione um arquivo:" 0 0 0 \
     "${OPTIONS[@]}" \
@@ -59,8 +73,11 @@ else
 
     # Limpa a tela
     clear
+
+    if [ -n "$result" ]; then
     # Exibe o resultado
     dialog --title 'Finalmente!' --msgbox "Você selecionou: $result" 0 0
+    fi
 fi
 
 # Chama a função para copiar o arquivo selecionado

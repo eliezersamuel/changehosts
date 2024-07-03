@@ -21,6 +21,14 @@ sudo ./script.sh
 sudo ./script.sh nome_do_arquivo_de_hosts
 ```
 
+## Listar Opções
+Para listar as opções sem ser pelo dialog, pode usar o parâmetro help:
+```bash
+sudo ./script.sh help
+# Escolha uma das opcoes abaixo:
+# - host01
+```
+
 ## Funcionalidades
 Verifica se o dialog está instalado e tenta instalá-lo se necessário.
 Verifica se o script está sendo executado com permissões de root.
